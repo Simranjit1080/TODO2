@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="TODO.css" />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js'></script>
+    <script>
+      window.onload = () => {
+        
+        class AppViewModel {
+          constructor() {
+            this.filterType = "all";
+          }
+          addTodoItem(caption) {
+            document.getElementById("error").style.display="none";
+            axios({method: 'post',
+              url: '/addTask?caption='+caption,
+            })
+            .then(res=>{
+              app.render();
+            }).catch(err=>{
+              if(err.response.status===406){
+                document.getElementById("error").innerHTML=err.response.data.errMsg;
+                document.getElementById("error").style.display="block";
+              }
+              else{
+                console.log(err.response.data.errMsg);
+              }
+            })
+          }
+          render() {
+            document.getElementById("list").innerHTML = "";
+            var self = this;
+            axios.get("/getList").then((res)=>{
+            for (var i in res.data) {
+              var li = document.createElement("li");
+              let check = document.createElement("input");
+              check.setAttribute("type", "button");
+              check.setAttribute("class", "check");
+              check.onclick=async function(i){
+                await axios.get("/toggle",{
+                  params:{
+                    id:res.data[i]._id
+                  }
+                }).then(res=>console.log(res.data.msg))
+                .catch(err=>console.log(err.response.data.error));
+                this.render();
+                }.bind(self, i);
+              let text = document.createTextNode(
+                res.data[i].caption
+              );
+              let h1 = document.createElement("span");
+              h1.setAttribute("class", "task");
+              h1.appendChild(text);
+              if (res.data[i].isComplete) {
+                h1.style.textDecoration = "line-through";
+                h1.style.color = "#ab998a";
+                var att = document.createAttribute("checked");
+                att.value=res.data[i].isComplete;
+               check.setAttributeNode(att);
+              }
+              var del = document.createElement("button");
+              del.innerHTML = "X";
+              del.setAttribute("class", "del");
+              del.onclick=async function(i){
+                await axios.get("/delete",{
+                  params:{
+                    id:res.data[i]._id
+                  }
+                }).then(res=>console.log(res.data.msg))
+                this.render();
+                }.bind(self, i);
+              li.appendChild(check);
+              li.appendChild(h1);
+              li.appendChild(del);
+              if (self.filterType === "all") {
+                list.appendChild(li);
+              } else if (
+                self.filterType === "active" &&
+                !res.data[i].isComplete
+              ) {
+                list.appendChild(li);
+              } else if (
+                self.filterType === "comp" &&
+                res.data[i].isComplete
+              ) {
+                list.appendChild(li);
+              }
+            }
+            })
+          }
+        }
+        var app = new AppViewModel();
+        app.render();
+        document.getElementById("text").addEventListener("keypress", (e) => {
+          if (e.keyCode == 13) {
+            var text = document.getElementById("text").value;
+              app.addTodoItem(text);
+              app.render();
+              e.target.value = "";
+            }
+          
+        });
+        var all = document.getElementById("all");
+        var active = document.getElementById("active");
+        var comp = document.getElementById("comp");
+        all.addEventListener("click", function (e) {
+          app.filterType = "all";
+          e.target.style.border = "1px solid #ab998a";
+          active.style.border = "none";
+          comp.style.border = "none";
+          app.render();
+        });
+
+        active.addEventListener("click", function (e) {
+          app.filterType = "active";
+          e.target.style.border = "1px solid #ab998a";
+          comp.style.border = "none";
+          all.style.border = "none";
+          app.render();
+        });
+        comp.addEventListener("click", function (e) {
+          app.filterType = "comp";
+          e.target.style.border = "1px solid #ab998a";
+          active.style.border = "none";
+          all.style.border = "none";
+          app.render();
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <div id="main">
+      <h1>
+        TO-DOs
+      </h1>
+      <input
+        type="text"
+        name="text"
+        id="text"
+        placeholder="What needs to be done?"
+      />
+      <span id="error" style="color: red"></span>
+      <ul id="list"></ul>
+      <center>
+        <button
+          id="all"
+          class="del"
+          style="background-color: rgba(255, 255, 255, 0.521); border:1px solid #ab998a; margin-right: 10px; float: none;"
+        >
+          All</button
+        ><button
+          id="active"
+          class="del"
+          style="background-color: rgba(255, 255, 255, 0.521); float: none;"
+        >
+          Active</button
+        ><button
+          id="comp"
+          class="del"
+          style="
+            background-color: rgba(255, 255, 255, 0.521);
+            margin-left: 10px;
+            float: none;
+          "
+        >
+          Completed
+        </button>
+      </center>
+    </div>
+  </body>
+</html>

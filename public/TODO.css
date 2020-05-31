@@ -1,0 +1,97 @@
+body {
+ background-image: url("todo.jpg");
+ background-size: cover;
+ background-attachment: fixed;
+ display:grid;
+ align-items: center;
+ justify-content:center;
+ font-family: "Ink Free";
+}
+#main {
+  width: 500px;
+  min-height: 200px;
+  border-radius: 20px;
+  padding: 50px;
+  padding-top:15px;
+margin-top: 40px;
+  box-shadow:0 0 1rem 0 rgba(0,0,0,.15);
+  background:inherit;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  z-index: 1;
+}
+#main:before{
+  content:"";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:inherit;
+  box-shadow: inset 0 0 2000px rgba(255,255,255,.15);
+  filter:blur(50px);
+  margin:-20px;
+  z-index: -1;
+}
+#list {
+  list-style: none;
+  text-align: left;
+}
+#text {
+  width: 300px;
+  margin: 10px;
+  font-size: large;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  padding-left: 4px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #f7e0cb;
+  font-family: "Ink Free";
+  box-shadow: 4px 4px 10px #8f7d6f;
+}
+#text:focus,
+.del:focus {
+  outline: none;
+}
+#list {
+  margin: 20px;
+  margin-bottom: 40px;
+}
+li {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.task{
+  font-size: 20px;
+  margin-left: 20px;
+}
+.del {
+  font-family: "Ink Free";
+  font-size: larger;
+  background-color: rgba(255, 255, 255, 0);
+  border: none;
+  border-radius: 5px;
+  float: right;
+}
+.del:hover {
+  color:#ab998a;
+}
+a:link {
+  text-decoration: none;
+}
+h1{
+font-family: "Ink Free";
+font-size: 55px;
+}
+.check{
+  height: 15px;
+  width:12px;
+  border: 1px solid #ab998a;
+  border-radius:100px;
+}
+.check[checked='true']{
+  background-color:#ab998a;
+  background-image: radial-gradient(white,#ab998a);
+}
